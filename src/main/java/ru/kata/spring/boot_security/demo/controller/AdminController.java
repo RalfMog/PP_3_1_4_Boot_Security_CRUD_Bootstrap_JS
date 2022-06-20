@@ -1,67 +1,53 @@
 package ru.kata.spring.boot_security.demo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.kata.spring.boot_security.demo.dao.UserRepository;
-import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
 import java.util.List;
-import java.util.Set;
 
 
-@Controller
-@RequestMapping("/admin")
+@RestController
+@RequestMapping("admin/api/users")
 public class AdminController {
 
     private final UserService userService;
-    private final UserRepository userRepository;
 
     @Autowired
-    public AdminController(UserService userService,
-                           UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public AdminController(UserService userService) {
         this.userService = userService;
     }
 
-    @GetMapping("/{id}")
-    public String allUser(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("user", userService.findById(id));
-        return "admin";
-    }
-
     @GetMapping()
-    public String showAllUsers(Model model, @AuthenticationPrincipal User user) {
-        List<User> users = userService.findAll();
-        Set<Role> listRoles = userService.getAllRoles();
-        model.addAttribute("users", users);
-        model.addAttribute("userObj", new User());
-        model.addAttribute("listRoles", listRoles);
-        model.addAttribute("userRep", userRepository.findByUsername(user.getUsername()));
-        return "admin";
+    public List<User> showAllUser() {
+        List<User> allUsers = userService.findAll();
+        return allUsers;
     }
 
-    @PostMapping("/create")
-    public String createUser(User user, @RequestParam("listRoles") Set<Role> roles) {
-        userService.saveUser(user, roles);
-        return "redirect:/admin";
+    @GetMapping("{id}")
+    public User getOneUser(@PathVariable("id") Long id) {
+        return userService.getById(id);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public String deleteUser(@PathVariable("id") Long id, Model model) {
-        List<User> users = userService.findAll();
-        model.addAttribute("users", users);
+    @PostMapping()
+    public User createNewUser(@RequestBody User user) {
+        userService.saveUser(user);
+        return user;
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         userService.deleteById(id);
-        return "redirect:/admin";
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/update/{id}")
-    public String updateUserForm(@ModelAttribute("user") User user, @RequestParam("listRoles") Set<Role> roles) {
-        userService.saveUser(user, roles);
-        return "redirect:/admin";
+    @PutMapping("{id}")
+    public User updateUser(@RequestBody User user) {
+        userService.updateUser(user);
+        return user;
     }
+
 }

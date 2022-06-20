@@ -8,13 +8,15 @@ import java.util.List;
 import java.util.Set;
 
 public interface UserService {
-    User findById(Long id);
+    User getById(Long id);
 
     List<User> findAll();
-
-    void saveUser(User user, Set<Role> roles);
 
     void deleteById(Long id);
 
     Set<Role> getAllRoles();
+
+    void saveUser(User user);
+
+    void updateUser(User updatedUser);
 }

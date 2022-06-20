@@ -30,18 +30,12 @@ public class UserServiceImpl implements UserService {
         this.roleRepository = roleRepository;
     }
 
-    public User findById(Long id) {
-        return userRepository.getById(id);
+    public User getById(Long id) {
+        return userRepository.findById(id).get();
     }
 
     public List<User> findAll() {
         return userRepository.findAll();
-    }
-
-    public void saveUser(User user, Set<Role> roles) {
-        user.setRoles(roles);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
     }
 
     public void deleteById(Long id) {
@@ -50,5 +44,17 @@ public class UserServiceImpl implements UserService {
 
     public Set<Role> getAllRoles() {
         return new HashSet<>(roleRepository.findAll());
+    }
+
+    public void saveUser(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepository.save(user);
+    }
+
+    public void updateUser(User updatedUser) {
+        if (!updatedUser.getPassword().equals(userRepository.getById(updatedUser.getId()).getPassword())) {
+            updatedUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+        }
+        userRepository.save(updatedUser);
     }
 }
