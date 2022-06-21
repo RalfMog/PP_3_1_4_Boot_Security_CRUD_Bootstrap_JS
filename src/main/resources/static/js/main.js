@@ -1,4 +1,4 @@
-let requestUrl = 'http://localhost:8080/admin/api/users'
+let requestUrl = 'http://localhost:8080/api/admin/users'
 
 //------ Table users ---------------
 function refreshData() {

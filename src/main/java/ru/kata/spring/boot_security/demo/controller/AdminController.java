@@ -11,7 +11,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("admin/api/users")
+@RequestMapping("api/admin/users")
 public class AdminController {
 
     private final UserService userService;
@@ -22,20 +22,27 @@ public class AdminController {
     }
 
     @GetMapping()
-    public List<User> showAllUser() {
-        List<User> allUsers = userService.findAll();
-        return allUsers;
+    public ResponseEntity<List<User>> showAllUser() {
+        final List<User> users = userService.findAll();
+
+        return users != null && !users.isEmpty()
+                ? new ResponseEntity<>(users, HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @GetMapping("{id}")
-    public User getOneUser(@PathVariable("id") Long id) {
-        return userService.getById(id);
+    public ResponseEntity<User> getOneUser(@PathVariable("id") Long id) {
+        final User user = userService.getById(id);
+
+        return user != null
+                ? new ResponseEntity<>(user, HttpStatus.OK)
+                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @PostMapping()
-    public User createNewUser(@RequestBody User user) {
+    public ResponseEntity<?> createNewUser(@RequestBody User user) {
         userService.saveUser(user);
-        return user;
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @DeleteMapping("{id}")
@@ -45,9 +52,10 @@ public class AdminController {
     }
 
     @PutMapping("{id}")
-    public User updateUser(@RequestBody User user) {
+    public ResponseEntity<?> updateUser(@RequestBody User user) {
         userService.updateUser(user);
-        return user;
+        return new ResponseEntity<>(HttpStatus.OK);
+
     }
 
 }

@@ -51,10 +51,10 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-    public void updateUser(User updatedUser) {
-        if (!updatedUser.getPassword().equals(userRepository.getById(updatedUser.getId()).getPassword())) {
-            updatedUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+    public void updateUser(User user) {
+        if (!user.getPassword().equals(userRepository.getById(user.getId()).getPassword())) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
-        userRepository.save(updatedUser);
+        userRepository.save(user);
     }
 }
